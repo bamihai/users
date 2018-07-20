@@ -1,31 +1,32 @@
 <?php
 session_start();
-
-if (isset($_SESSION["username"])) {
-  echo "You are logged in with " . $_SESSION["username"] . "<br />";
+error_reporting(E_ALL);
+ini_set("display_errors", true);
+if (isset($_SESSION["email"])) {
+  echo "You are logged in with " . $_SESSION["email"] . "<br />";
   echo "To logout click <a href='logout.php'>here</a>";
   exit();
 }
 
-if (!isset($_POST["username"]) || !isset($_POST["password"])) {
-  echo "Please enter both username and password";
+if (!isset($_POST["email"]) || !isset($_POST["password"])) {
+  echo "Please enter both email and password";
 } else {
   $db = mysqli_connect("127.0.0.1", "root", null, "proiect");
 
-  $query = "SELECT username, email from users where username = ? and password = SHA(?)";
+  $query = "SELECT email from users where email = ? and password = SHA(?)";
   $statement = $db->prepare($query);
 
-  $statement->bind_param("ss", $_POST["username"], $_POST["password"]);
+  $statement->bind_param("ss", $_POST["email"], $_POST["password"]);
   $statement->execute();
   $result = $statement->get_result();
 
   if ($result->num_rows == 1) {
       $row = $result->fetch_array();
-      $username = $row['username'];
+      $email = $row['email'];
 
-      $_SESSION["username"] = $username;
+      $_SESSION["email"] = $email;
 
-      // echo "You are now logged in with " . $row['username'];
+      // echo "You are now logged in with " . $row['email'];
       header("Location: index.php");   //CAND NE LOGAM NE VA DUCE DIRECT CATRE PAGINA INDICATA IN LOCATION
       exit();
   } else {
@@ -33,12 +34,35 @@ if (!isset($_POST["username"]) || !isset($_POST["password"])) {
   }
 }
 ?>
-<form action="login.php" method="POST">
-  <label for="username">Username:</label>
-  <input name="username" type="text"/>
-  <br/>
-  <label for="password">Password:</label>
-  <input name="password" type="password"/>
-  <br/>
-  <input type="submit" value="Login"/>
-</form>
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+
+<h2>Login</h2>
+
+
+    <form action="login.php" method="post">
+
+
+        <div class="container">
+            <label for="email"><b>email</b></label>
+            <input type="text" placeholder="Enter email" name="email" required>
+
+            <label for="password"><b>Password</b></label>
+            <input type="password" placeholder="Enter Password" name="password" required>
+
+            <button type="submit">Login</button>
+
+        </div>
+    </form>
+
+</body>
+</html>
