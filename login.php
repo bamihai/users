@@ -1,4 +1,5 @@
 <?php
+require_once "include/db.php";
 session_start();
 error_reporting(E_ALL);
 ini_set("display_errors", true);
@@ -11,17 +12,16 @@ if (isset($_SESSION["email"])) {
 if (!isset($_POST["email"]) || !isset($_POST["password"])) {
   echo "Please enter both email and password";
 } else {
-  $db = mysqli_connect("127.0.0.1", "root", null, "proiect");
 
   $query = "SELECT email from users where email = ? and password = SHA(?)";
   $statement = $db->prepare($query);
 
   $statement->bind_param("ss", $_POST["email"], $_POST["password"]);
   $statement->execute();
-  $result = $statement->get_result();
+  $result = $statement->fetchAll();
 
-  if ($result->num_rows == 1) {
-      $row = $result->fetch_array();
+  if (count($result) == 1) {
+      $row = $result[0];
       $email = $row['email'];
 
       $_SESSION["email"] = $email;
